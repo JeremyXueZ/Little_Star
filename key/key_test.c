@@ -72,15 +72,12 @@ int rowScan(int row)
     
     pullUp(PULL_UP_ALL);
     if(digitalRead(row) == HIGH){
-        delay(100); // 简单防抖处理，待优化
-        if(digitalRead(row) == HIGH){
-            pullUp(C[1]);
-            if(digitalRead(row) == HIGH) key|=0x100;
-            pullUp(C[2]);
-            if(digitalRead(row) == HIGH) key|=0x010;
-            pullUp(C[3]);
-            if(digitalRead(row) == HIGH) key|=0x001;
-        }
+        pullUp(C[1]);
+        if(digitalRead(row) == HIGH) key|=0x100;
+        pullUp(C[2]);
+        if(digitalRead(row) == HIGH) key|=0x010;
+        pullUp(C[3]);
+        if(digitalRead(row) == HIGH) key|=0x001;
     }
     return key;
 }
@@ -91,17 +88,26 @@ int rowScan(int row)
 int main(void)
 {
     int i;
+    int scan;
     int r[4] = {0,0};
 
     wiringPiSetup();
     gpioInit();
 
     while(1){
-        r[1] = rowScan(R[1]); // 扫描第一行
-        r[2] = rowScan(R[2]); // 扫描第二行
-        r[3] = rowScan(R[3]); // 扫描第三行
 
-        if((r[1]==0)&&(r[2]==0)&&(r[3]==0)) continue; // 无按键不输出
+        for(i=1;i<=3;i++){
+            if(digitalRead(R[i]) == HIGH){
+                scan |= 1<<(i-1);
+            }
+        }
+        if(scan != 0) delay(100);
+
+        if(scan&0x001 == 0x001)  r[1] = rowScan(R[1]); // 扫描第一行
+        if(scan&0x010 == 0x010)  r[2] = rowScan(R[2]); // 扫描第二行
+        if(scan&0x100 == 0x100)  r[3] = rowScan(R[3]); // 扫描第三行
+
+        if((r[1]==0)&&(r[2]==0)&&(r[3]==0)) continue;  // 无按键不输出
 
         printf("----------\n");
         for(i=1;i<=3;i++){
