@@ -88,8 +88,8 @@ int rowScan(int row)
 int main(void)
 {
     int i;
-    int scan;
-    int r[4] = {0,0};
+    int r1[4];
+    int r2[4];
 
     wiringPiSetup();
     gpioInit();
@@ -97,21 +97,19 @@ int main(void)
     while(1){
 
         for(i=1;i<=3;i++){
-            if(digitalRead(R[i]) == HIGH){
-                scan |= 1<<(i-1);
-            }
+            r1[i] = rowScan(R[i]);
         }
-        if(scan != 0) delay(100);
+        delay(10);
+        for(i=1;i<=3;i++){
+            r2[i] = rowScan(R[i]);
+            r1[i] &= r2[i];
+        }
 
-        if(scan&0x001 == 0x001)  r[1] = rowScan(R[1]); // 扫描第一行
-        if(scan&0x010 == 0x010)  r[2] = rowScan(R[2]); // 扫描第二行
-        if(scan&0x100 == 0x100)  r[3] = rowScan(R[3]); // 扫描第三行
-
-        if((r[1]==0)&&(r[2]==0)&&(r[3]==0)) continue;  // 无按键不输出
+        if((r1[1]==0)&&(r1[2]==0)&&(r1[3]==0)) continue;  // 无按键不输出
 
         printf("----------\n");
         for(i=1;i<=3;i++){
-            printf("line_%d:%3x\n",i,r[i]);
+            printf("line_%d:%3x\n",i,r1[i]);
         }
         printf("----------\n");
     }
