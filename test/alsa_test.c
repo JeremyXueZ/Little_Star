@@ -5,19 +5,7 @@
  > Created Time: Tue 06 Mar 2018 10:57:44 CST
 ************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <wiringPi.h>
-
-#include "/usr/local/tinyalsa/include/tinyalsa/pcm.h"
-
-
-int C[4]={0, 25, 24, 23};
-int R[4]={0, 29, 28, 27};
-
-
-/* 音频测试文件路径定义 */
-char Audio[]={"../audio/DJI.wav"};
+#include "alsa_test.h"
 
 
 /* 声卡设备定义，PCM设置 */
@@ -120,41 +108,30 @@ static int write_frames(const void * frames, size_t byte_count)
 }
 
 
-int main(void)
+/* openAudio 
+ * brief: 打开音频文件，.wav 格式
+ * args:  音频文件路径
+ * rtn:   1: 打开成功
+ *        0: 打开失败
+ * */
+int openAudio(char *audio_path)
 {
     void *frames;
     size_t size;
 
-    int audio_flag;
-
-    wiringPiSetup();
-    pinMode(C[1], OUTPUT);
-    pinMode(R[1], INPUT);
-
-    while(1){
-        audio_flag = 0;
-        if(digitalRead(R[1]) == HIGH){
-            delay(100);
-            if(digitalRead(R[1]) == HIGH){
-                audio_flag = 1;
-            }
-        }
-
-        if(audio_flag == 1){
-            size = read_file(&frames, Audio);
-            printf("audio file size:%d\n",size);
-            if (size == 0) {
-                printf("failed to read file\n");
-            }
-
-            if (write_frames(frames, size) < 0) {
-                printf("failed to write frames\n");
-            }
-
-            free(frames);
-        }
+    size = read_file(&frames, audio_path);
+    printf("audio file size:%d\n",size);
+    if (size == 0) {
+        printf("failed to read file\n");
+        return 0;
     }
 
-    return 0;
+    if (write_frames(frames, size) < 0) {
+        printf("failed to write frames\n");
+        return 0;
+    }
+
+    free(frames);
+    return 1;
 }
 
