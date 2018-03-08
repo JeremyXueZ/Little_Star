@@ -17,6 +17,9 @@ static void stop_last_play(void *arg);
 static void *snd_thread_fn(void *arg)
 {
     int key = (int)arg;
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
     pthread_cleanup_push(stop_last_play, NULL);
     switch (key) {
     case 1:
@@ -28,7 +31,7 @@ static void *snd_thread_fn(void *arg)
     case 7:
     case 8:
     case 9:
-        openAudio("../../audio/DJI.wav");
+        openAudio("../audio/DJI.wav");
         break;
     default:
         printf("no this key!\n");
@@ -66,11 +69,13 @@ static void start_play(void)
         if (key[i]) {
             if (last_key[i]) {
                 pthread_cancel(snd[i]);
+                pthread_join(snd[i],NULL);
                 pthread_create(&snd[i], NULL, snd_thread_fn, (void *)i);
             } else {
                 pthread_create(&snd[i], NULL, snd_thread_fn, (void *)i);
             }
         }
+        last_key[i] = key[i];
     }
 }
 

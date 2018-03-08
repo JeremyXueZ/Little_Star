@@ -133,16 +133,16 @@ int openAudio(char *audio_path)
         return 0;
     }
 
-    free(frames);
+    if (frames != NULL)
+        free(frames);
     return 1;
 }
 
 
 void stopAudio(void)
 {
-    if (frames != NULL) {
+    if (frames != NULL)
         free(frames);
-    }
 
     if (pcm == NULL) {
         return;
