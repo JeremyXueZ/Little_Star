@@ -27,13 +27,13 @@ const struct pcm_config Config = {
 static struct pcm *pcm[10];
 static void *frames[10];
 static char audio_path[10][30] = {"../audio/DJI.wav",
-                                  "../audio/DJI.wav",
-                                  "../audio/DJI.wav",
-                                  "../audio/DJI.wav",
-                                  "../audio/DJI.wav",
-                                  "../audio/DJI.wav",
-                                  "../audio/DJI.wav",
-                                  "../audio/DJI.wav",
+                                  "../audio/0.5s/do.wav",
+                                  "../audio/0.5s/re.wav",
+                                  "../audio/0.5s/mi.wav",
+                                  "../audio/0.5s/fa.wav",
+                                  "../audio/0.5s/so.wav",
+                                  "../audio/0.5s/la.wav",
+                                  "../audio/0.5s/si.wav",
                                   "../audio/DJI.wav",
                                   "../audio/DJI.wav",
 };
