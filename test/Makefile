@@ -33,7 +33,7 @@ object: $(OBJECT)
 rebuild: cleanall build
 
 $(TARGET): $(OBJECT)
-	$(CC) $(CFLAGS) $(INCLUDE) -o $@ $(OBJECT) $(LIBS)
+	$(CC) $(CFLAGS)  $(INCLUDE) -o $@ $(OBJECT) $(LIBS)
 
 clean:
 	@echo "Removing compiled files ..."

@@ -14,6 +14,15 @@ static int read_key(void);
 static void start_play(void);
 static void stop_last_play(void *arg);
 
+char p_do[]={"../audio/0.5s/do.wav"};
+char p_re[]={"../audio/0.5s/re.wav"};
+char p_mi[]={"../audio/0.5s/mi.wav"};;
+char p_fa[]={"../audio/0.5s/fa.wav"};
+char p_so[]={"../audio/0.5s/so.wav"};
+char p_la[]={"../audio/0.5s/la.wav"};
+char p_si[]={"../audio/0.5s/si.wav"};
+
+
 static void *snd_thread_fn(void *arg)
 {
     int key = (int)arg;
@@ -23,15 +32,29 @@ static void *snd_thread_fn(void *arg)
     pthread_cleanup_push(stop_last_play, NULL);
     switch (key) {
     case 1:
+        openAudio(p_do);
+        break;
     case 2:
+        openAudio(p_re);
+        break;
     case 3:
+        openAudio(p_mi);
+        break;
     case 4:
+        openAudio(p_fa);
+        break;
     case 5:
+        openAudio(p_so);
+        break;
     case 6:
+        openAudio(p_la);
+        break;
     case 7:
+        openAudio(p_si);
+        break;
     case 8:
     case 9:
-        openAudio("../audio/DJI.wav");
+        openAudio("../audio/1s/do.wav");
         break;
     default:
         printf("no this key!\n");

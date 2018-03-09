@@ -139,6 +139,11 @@ int openAudio(char *audio_path)
 }
 
 
+/* stopAudio 
+ * brief: 强制关闭 PCM 输出 
+ * args:  void 
+ * rtn:   void
+ * */
 void stopAudio(void)
 {
     if (frames != NULL)
@@ -151,3 +156,4 @@ void stopAudio(void)
         pcm_close(pcm);
     }
 }
+

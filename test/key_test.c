@@ -90,6 +90,9 @@ int keyboardScan(int *key)
     int i;
     int r1[4];
     int r2[4];
+    int same = 0;
+
+    static int pre_r[4];
 
     for(i=1;i<=9;i++){
         key[i] = 0;
@@ -104,7 +107,21 @@ int keyboardScan(int *key)
         r1[i] &= r2[i];
     }
 
-    if((r1[1]==0)&&(r1[2]==0)&&(r1[3]==0)) return 0;
+    if((r1[1]==0)&&(r1[2]==0)&&(r1[3]==0)){
+        for(i=1;i<=3;i++){
+            pre_r[i] = 0;
+        }
+        return 0;
+    }
+
+    for(i=1;i<=3;i++){
+        if(pre_r[i] == r1[i]) same++;
+    }
+
+    for(i=1;i<=3;i++){
+        pre_r[i] = r1[i];
+    }
+    if(same == 3) return 0;
     
     for(i=1;i<=3;i++){
         if(r1[i]&0x100) key[1+(i-1)*3] = 1;
@@ -116,35 +133,26 @@ int keyboardScan(int *key)
 }
 
 
-/* main
+/* test_main
  * */
 //int main(void)
 //{
 //    int i;
-//    int r1[4];
-//    int r2[4];
+//    int key[10];
+//    int press;
 //
 //    wiringPiSetup();
 //    gpioInit();
 //
 //    while(1){
 //
-//        for(i=1;i<=3;i++){
-//            r1[i] = rowScan(R[i]);
-//        }
-//        delay(10);
-//        for(i=1;i<=3;i++){
-//            r2[i] = rowScan(R[i]);
-//            r1[i] &= r2[i];
-//        }
-//
-//        if((r1[1]==0)&&(r1[2]==0)&&(r1[3]==0)) continue;  // 无按键不输出
-//
+//        press = keyboardScan(key);
+//        if(!press) continue; 
 //        printf("----------\n");
-//        for(i=1;i<=3;i++){
-//            printf("line_%d:%3x\n",i,r1[i]);
+//        for(i=1;i<=9;i++){
+//            printf("%d",key[i]);
 //        }
-//        printf("----------\n");
+//        printf("\n");
 //    }
 //}
 
