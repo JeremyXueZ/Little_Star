@@ -9,7 +9,7 @@
 
 
 /* 各行列对应 wiringPi 引脚
- * e.g. 第一列C[1] 对应引脚 wPi pin_25 
+ * e.g. 第一列C[1] 对应引脚 wPi pin_25
  * Notes: 需要根据实际接线修改 */
 int C[4]={0, 25, 24, 23};
 int R[4]={0, 29, 28, 27};
@@ -65,7 +65,7 @@ void pullUp(int column)
 int  rowScan(int row)
 {
     int key = 0;
-    
+
     pullUp(PULL_UP_ALL);
     if(digitalRead(row) == HIGH){
         pullUp(C[1]);
@@ -105,7 +105,7 @@ int keyboardScan(int *key)
     }
 
     if((r1[1]==0)&&(r1[2]==0)&&(r1[3]==0)) return 0;
-    
+
     for(i=1;i<=3;i++){
         if(r1[i]&0x100) key[1+(i-1)*3] = 1;
         if(r1[i]&0x010) key[2+(i-1)*3] = 1;

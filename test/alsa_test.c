@@ -1,20 +1,16 @@
 /*************************************************************************
  > File Name: alsa.c
- > Author: 
- > Email: 
+ > Author:
+ > Email:
  > Created Time: Tue 06 Mar 2018 10:57:44 CST
 ************************************************************************/
 
 #include "alsa_test.h"
 
-
 /* 声卡设备定义，PCM设置 */
 unsigned int Card = 0;
 unsigned int Device = 0;
 int Flags = PCM_OUT;
-
-static struct pcm * pcm;
-static void *frames;
 
 const struct pcm_config Config = {
     .channels = 2,
@@ -27,8 +23,22 @@ const struct pcm_config Config = {
     .stop_threshold = 1024*2
 };
 
+/* pcm接口，帧空间，文件路径数组，使用1-9，0无用 */
+static struct pcm *pcm[10];
+static void *frames[10];
+static char audio_path[10][30] = {"../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+                                  "../audio/DJI.wav",
+};
 
-/* file_size 
+/* file_size
  * brief: 读取文件大小
  * args:  file: 文件描述符
  * rtn:   file_size: 文件大小
@@ -46,15 +56,14 @@ static long int file_size(FILE * file)
 }
 
 
-/* read_file 
+/* read_file
  * brief: 读取文件
- * args:  frames: 帧地址
- *        audio: 目标音频文件路径
+ * args:  key: 目标音频文件编号
  * rtn:   size: 文件大小
  * */
-static size_t read_file(void ** frames, char *audio)
+static size_t read_file(int key)
 {
-    FILE * input_file = fopen(audio, "r");
+    FILE * input_file = fopen(audio_path[key], "r");
     if (input_file == NULL) {
         perror("failed to open file for writing");
         return 0;
@@ -67,14 +76,14 @@ static size_t read_file(void ** frames, char *audio)
         return 0;
     }
 
-    *frames = malloc(size);
-    if (*frames == NULL) {
+    frames[key] = malloc(size);
+    if (frames[key] == NULL) {
         fprintf(stderr, "failed to allocate frames\n");
         fclose(input_file);
         return 0;
     }
 
-    size = fread(*frames, 1, size, input_file);
+    size = fread(frames[key], 1, size, input_file);
 
     fclose(input_file);
 
@@ -82,72 +91,78 @@ static size_t read_file(void ** frames, char *audio)
 }
 
 
-/* write_frames 
+/* write_frames
  * brief: 帧写入
- * args: frames: 帧空间
- *       byte_count: 字节数
+ * args: byte_count: 字节数
+ *       key: 目标音频文件编号
  * rtn:  0：写入成功
  *      -1：写入失败
  * */
-static int write_frames(const void * frames, size_t byte_count)
+static int write_frames(size_t byte_count, int key)
 {
-    pcm = pcm_open(Card, Device, Flags, &Config);
-    if (pcm == NULL) {
+    pcm[key] = pcm_open(Card, Device, Flags, &Config);
+    if (pcm[key] == NULL) {
         fprintf(stderr, "failed to allocate memory for PCM\n");
         return -1;
-    } else if (!pcm_is_ready(pcm)){
-        pcm_close(pcm);
+    } else if (!pcm_is_ready(pcm[key])){
+        pcm_close(pcm[key]);
         fprintf(stderr, "failed to open PCM\n");
         return -1;
     }
 
-    unsigned int frame_count = pcm_bytes_to_frames(pcm, byte_count);
+    unsigned int frame_count = pcm_bytes_to_frames(pcm[key], byte_count);
+    pcm_writei(pcm[key], frames[key], frame_count);
 
-    pcm_writei(pcm, frames, frame_count);
-
-    pcm_close(pcm);
+    pcm_close(pcm[key]);
 
     return 0;
 }
 
 
-/* openAudio 
+/* openAudio
  * brief: 打开音频文件，.wav 格式
- * args:  音频文件路径
+ * args:  目标音频文件编号
  * rtn:   1: 打开成功
  *        0: 打开失败
  * */
-int openAudio(char *audio_path)
+int openAudio(int key)
 {
     size_t size;
 
-    size = read_file(&frames, audio_path);
+    size = read_file(key);
     printf("audio file size:%d\n",size);
     if (size == 0) {
         printf("failed to read file\n");
         return 0;
     }
 
-    if (write_frames(frames, size) < 0) {
+    if (write_frames(size, key) < 0) {
         printf("failed to write frames\n");
         return 0;
     }
 
-    if (frames != NULL)
-        free(frames);
+    if (frames[key] != NULL) {
+        free(frames[key]);
+        frames[key] = NULL;
+    }
     return 1;
 }
 
+/* stopAudio
+ * brief: 关闭正在播放的音频文件，.wav 格式
+ * args:  目标音频文件编号
+ * */
 
-void stopAudio(void)
+void stopAudio(int key)
 {
-    if (frames != NULL)
-        free(frames);
+    if (frames[key] != NULL) {
+        free(frames[key]);
+        frames[key] = NULL;
+    }
 
-    if (pcm == NULL) {
+    if (pcm[key] == NULL) {
         return;
     } else {
-        pcm_stop(pcm);
-        pcm_close(pcm);
+        pcm_close(pcm[key]);
     }
 }

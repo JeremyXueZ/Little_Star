@@ -38,6 +38,7 @@ $(TARGET): $(OBJECT)
 clean:
 	@echo "Removing compiled files ..."
 	-rm *.o
+	-rm thread/*.o
 
 cleanall: clean
 	@echo "Cleaning all ..."
