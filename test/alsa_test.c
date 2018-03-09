@@ -13,6 +13,9 @@ unsigned int Card = 0;
 unsigned int Device = 0;
 int Flags = PCM_OUT;
 
+static struct pcm * pcm;
+static void *frames;
+
 const struct pcm_config Config = {
     .channels = 2,
     .rate = 44050,
@@ -88,7 +91,7 @@ static size_t read_file(void ** frames, char *audio)
  * */
 static int write_frames(const void * frames, size_t byte_count)
 {
-    struct pcm * pcm = pcm_open(Card, Device, Flags, &Config);
+    pcm = pcm_open(Card, Device, Flags, &Config);
     if (pcm == NULL) {
         fprintf(stderr, "failed to allocate memory for PCM\n");
         return -1;
@@ -116,7 +119,6 @@ static int write_frames(const void * frames, size_t byte_count)
  * */
 int openAudio(char *audio_path)
 {
-    void *frames;
     size_t size;
 
     size = read_file(&frames, audio_path);
@@ -131,7 +133,21 @@ int openAudio(char *audio_path)
         return 0;
     }
 
-    free(frames);
+    if (frames != NULL)
+        free(frames);
     return 1;
 }
 
+
+void stopAudio(void)
+{
+    if (frames != NULL)
+        free(frames);
+
+    if (pcm == NULL) {
+        return;
+    } else {
+        pcm_stop(pcm);
+        pcm_close(pcm);
+    }
+}
