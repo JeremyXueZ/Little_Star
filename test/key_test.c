@@ -5,11 +5,7 @@
  > Created Time: Fri 02 Mar 2018 14:25:09 CST
 ************************************************************************/
 
-#include <stdio.h>
-#include <wiringPi.h>
-
-
-#define PULL_UP_ALL    3
+#include "key_test.h"
 
 
 /* 各行列对应 wiringPi 引脚
@@ -66,48 +62,89 @@ void pullUp(int column)
  *                 100 该行第一列有按下
  *                 110 该行第一列第二列均有按下
  * */
-int rowScan(int row)
+int  rowScan(int row)
 {
     int key = 0;
     
     pullUp(PULL_UP_ALL);
     if(digitalRead(row) == HIGH){
-        delay(100); // 简单防抖处理，待优化
-        if(digitalRead(row) == HIGH){
-            pullUp(C[1]);
-            if(digitalRead(row) == HIGH) key|=0x100;
-            pullUp(C[2]);
-            if(digitalRead(row) == HIGH) key|=0x010;
-            pullUp(C[3]);
-            if(digitalRead(row) == HIGH) key|=0x001;
-        }
+        pullUp(C[1]);
+        if(digitalRead(row) == HIGH) key |= 0x100;
+        pullUp(C[2]);
+        if(digitalRead(row) == HIGH) key |= 0x010;
+        pullUp(C[3]);
+        if(digitalRead(row) == HIGH) key |= 0x001;
     }
     return key;
 }
 
 
-/* main
+/* keyboardScan
+ * brief: 返回按键情况
+ * args:  key: 指向按键数组
+ * rtn:   0 没有按键按下
+ *        1 有按键按下
  * */
-int main(void)
+int keyboardScan(int *key)
 {
     int i;
-    int r[4] = {0,0};
+    int r1[4];
+    int r2[4];
 
-    wiringPiSetup();
-    gpioInit();
-
-    while(1){
-        r[1] = rowScan(R[1]); // 扫描第一行
-        r[2] = rowScan(R[2]); // 扫描第二行
-        r[3] = rowScan(R[3]); // 扫描第三行
-
-        if((r[1]==0)&&(r[2]==0)&&(r[3]==0)) continue; // 无按键不输出
-
-        printf("----------\n");
-        for(i=1;i<=3;i++){
-            printf("line_%d:%3x\n",i,r[i]);
-        }
-        printf("----------\n");
+    for(i=1;i<=9;i++){
+        key[i] = 0;
     }
+
+    for(i=1;i<=3;i++){
+        r1[i] = rowScan(R[i]);
+    }
+    delay(10);
+    for(i=1;i<=3;i++){
+        r2[i] = rowScan(R[i]);
+        r1[i] &= r2[i];
+    }
+
+    if((r1[1]==0)&&(r1[2]==0)&&(r1[3]==0)) return 0;
+    
+    for(i=1;i<=3;i++){
+        if(r1[i]&0x100) key[1+(i-1)*3] = 1;
+        if(r1[i]&0x010) key[2+(i-1)*3] = 1;
+        if(r1[i]&0x001) key[3+(i-1)*3] = 1;
+    }
+
+    return 1;
 }
+
+
+/* main
+ * */
+//int main(void)
+//{
+//    int i;
+//    int r1[4];
+//    int r2[4];
+//
+//    wiringPiSetup();
+//    gpioInit();
+//
+//    while(1){
+//
+//        for(i=1;i<=3;i++){
+//            r1[i] = rowScan(R[i]);
+//        }
+//        delay(10);
+//        for(i=1;i<=3;i++){
+//            r2[i] = rowScan(R[i]);
+//            r1[i] &= r2[i];
+//        }
+//
+//        if((r1[1]==0)&&(r1[2]==0)&&(r1[3]==0)) continue;  // 无按键不输出
+//
+//        printf("----------\n");
+//        for(i=1;i<=3;i++){
+//            printf("line_%d:%3x\n",i,r1[i]);
+//        }
+//        printf("----------\n");
+//    }
+//}
 
