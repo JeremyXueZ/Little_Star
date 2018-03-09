@@ -2,67 +2,55 @@
 #include <pthread.h>
 #include "../alsa_test.h"
 
+/* 声明于key_thread.c用于传递按键扫描结果 */
 extern int confirmed_key[10];
 extern int new_key_is_pushed;
-static int key[10];
-static int last_key[10];
+extern pthread_mutex_t key_scan_lock;
 
-extern pthread_mutex_t key_scan;
+/* 内部存储按键扫描结果，以及上一次的播放是否结束（用于覆盖前一次播放的音频） */
+static int key[10];
+static int last_playing[10];
+
+/* 播放对应按键音频文件的线程 */
 static pthread_t snd[10];
 
+/* 内部函数声明 */
 static int read_key(void);
 static void start_play(void);
 static void stop_last_play(void *arg);
 
-char p_do[]={"../audio/0.5s/do.wav"};
-char p_re[]={"../audio/0.5s/re.wav"};
-char p_mi[]={"../audio/0.5s/mi.wav"};;
-char p_fa[]={"../audio/0.5s/fa.wav"};
-char p_so[]={"../audio/0.5s/so.wav"};
-char p_la[]={"../audio/0.5s/la.wav"};
-char p_si[]={"../audio/0.5s/si.wav"};
-
-
+/* snd_thread_fn
+ * brief: 内部播放音频线程
+ * args:  arg: 线程入口函数的固定参数，如果有需要转换成相应的数据类型读取，这里传递音频编号key
+ * */
 static void *snd_thread_fn(void *arg)
 {
     int key = (int)arg;
+
+    //在音乐覆盖时，中止线程前清理动态内存空间
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+    pthread_cleanup_push(stop_last_play, (void *)key);
 
-    pthread_cleanup_push(stop_last_play, NULL);
-    switch (key) {
-    case 1:
-        openAudio(p_do);
-        break;
-    case 2:
-        openAudio(p_re);
-        break;
-    case 3:
-        openAudio(p_mi);
-        break;
-    case 4:
-        openAudio(p_fa);
-        break;
-    case 5:
-        openAudio(p_so);
-        break;
-    case 6:
-        openAudio(p_la);
-        break;
-    case 7:
-        openAudio(p_si);
-        break;
-    case 8:
-    case 9:
-        openAudio("../audio/1s/do.wav");
-        break;
-    default:
+    //播放对应的音频文件
+    if ((1 <= key) && (key <= 9)) {
+        openAudio(key);
+    } else {
         printf("no this key!\n");
     }
+
     pthread_cleanup_pop(0);
+
+    //上一次播放结束，清除标志
+    last_playing[key] = 0;
     return ((void *)0);
 }
 
+/* play_thread_fn
+ * brief: 处理按键扫描结果，选择播放音频的线程
+ * args : arg: 线程入口函数的固定参数，如果有需要转换成相应的数据类型读取
+ * rtn  : void
+ * */
 void *play_thread_fn(void *arg)
 {
     while (1) {
@@ -71,14 +59,20 @@ void *play_thread_fn(void *arg)
     }
 }
 
+/* read_key
+ * brief: 接收按键扫描的结果，用互斥锁保证数据安全
+ * args : void
+ * rtn  : 有新按键返回0
+ *        没有返回-1
+ * */
 static int read_key(void)
 {
     if (new_key_is_pushed) {
-        pthread_mutex_lock(&key_scan);
+        pthread_mutex_lock(&key_scan_lock);
         for (int i = 1; i <= 9; i++)
             key[i] = confirmed_key[i];
         new_key_is_pushed = 0;
-        pthread_mutex_unlock(&key_scan);
+        pthread_mutex_unlock(&key_scan_lock);
 
         return 0;
     } else {
@@ -86,11 +80,16 @@ static int read_key(void)
     }
 }
 
+/* start_play
+ * brief: 接根据按键结果选择播放文件，创建相应的播放线程
+ * args : void
+ * rtn  : void
+ * */
 static void start_play(void)
 {
     for (int i = 1; i <= 9; i++) {
         if (key[i]) {
-            if (last_key[i]) {
+            if (last_playing[i]) {//上一次播放未结束，则中止上一次播放
                 pthread_cancel(snd[i]);
                 pthread_join(snd[i],NULL);
                 pthread_create(&snd[i], NULL, snd_thread_fn, (void *)i);
@@ -98,11 +97,17 @@ static void start_play(void)
                 pthread_create(&snd[i], NULL, snd_thread_fn, (void *)i);
             }
         }
-        last_key[i] = key[i];
+        last_playing[i] = 1;
     }
 }
 
+/* stop_last_play
+ * brief: 在音乐覆盖时，中止线程前清理动态内存空间
+ * args : 固定参数，如果有需要转换成相应的数据类型读取，这里传递音频编号key
+ * rtn  : void
+ * */
 static void stop_last_play(void *arg)
 {
-    stopAudio();
+    int key = (int)arg;
+    stopAudio(key);
 }
