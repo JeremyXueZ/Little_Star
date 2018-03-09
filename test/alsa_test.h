@@ -13,6 +13,7 @@
 
 
 int openAudio(char *audio_path);
+void stopAudio(void);
 
 #endif
 

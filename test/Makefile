@@ -4,7 +4,7 @@
 
 
 # 源文件
-SOURCE  := $(wildcard *.c) $(wildcard *.cpp)
+SOURCE  := $(wildcard *.c) $(wildcard *.cpp) $(wildcard thread/*.c)
 OBJECT  := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCE)))
 
 
@@ -15,7 +15,7 @@ TARGET  := main
 # 编译参数设置
 CC      := gcc
 CFLAGS  := -g -Wall
-LIBS    := -lwiringPi -ltinyalsa 
+LIBS    := -lwiringPi -ltinyalsa -lpthread
 INCLUDE := -I.
 
 
@@ -30,14 +30,14 @@ build: $(TARGET)
 
 object: $(OBJECT)
 
-rebuild: cleanall build 
+rebuild: cleanall build
 
 $(TARGET): $(OBJECT)
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ $(OBJECT) $(LIBS)
 
 clean:
 	@echo "Removing compiled files ..."
-	-rm *.o 
+	-rm *.o
 
 cleanall: clean
 	@echo "Cleaning all ..."

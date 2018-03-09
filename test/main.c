@@ -5,33 +5,30 @@
  > Created Time: Wed 07 Mar 2018 17:24:59 CST
 ************************************************************************/
 
-#include "key_test.h" 
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include "key_test.h"
 #include "alsa_test.h"
-
-
-char audio_start[]={"../audio/DJI.wav"};
-
+#include "thread/key_thread.h"
+#include "thread/play_thread.h"
 
 int main(int argc, char const *argv[])
 {
-    int i;
-    int is_press;
-    int key[10];
+    pthread_t tid1, tid2;
+    int ret;
 
-    wiringPiSetup();
-    gpioInit();
-    openAudio(audio_start);
-
+    ret = pthread_create(&tid1, NULL, key_thread_fn, NULL);
+    if (ret != 0) {
+        printf("create key thread failed!\n");
+        exit(-1);
+    }
+    ret = pthread_create(&tid2, NULL, play_thread_fn, NULL);
+    if (ret != 0) {
+        printf("create play thread failed!\n");
+        exit(-1);
+    }
     while(1){
-
-        is_press = keyboardScan(key);
-
-        if(!is_press) continue;
-
-        for(i=1;i<=9;i++){
-            printf("%d",key[i]);
-        }
-        printf("\n");
     }
 
     return 0;
