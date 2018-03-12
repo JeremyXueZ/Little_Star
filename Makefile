@@ -4,7 +4,7 @@
 
 
 # 源文件
-SOURCE  := $(wildcard *.c) $(wildcard *.cpp) $(wildcard thread/*.c)
+SOURCE  := $(wildcard *.c) $(wildcard *.cpp) $(wildcard src/*.c)
 OBJECT  := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCE)))
 
 
@@ -33,11 +33,12 @@ object: $(OBJECT)
 rebuild: cleanall build
 
 $(TARGET): $(OBJECT)
-	$(CC) $(CFLAGS) $(INCLUDE) -o $@ $(OBJECT) $(LIBS)
+	$(CC) $(CFLAGS)  $(INCLUDE) -o $@ $(OBJECT) $(LIBS)
 
 clean:
 	@echo "Removing compiled files ..."
 	-rm *.o
+	-rm src/*.o
 
 cleanall: clean
 	@echo "Cleaning all ..."

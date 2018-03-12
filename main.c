@@ -1,17 +1,17 @@
 /*************************************************************************
  > File Name: main.c
- > Author: 
- > Email: 
+ > Author:
+ > Email:
  > Created Time: Wed 07 Mar 2018 17:24:59 CST
 ************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "key_test.h"
-#include "alsa_test.h"
-#include "thread/key_thread.h"
-#include "thread/play_thread.h"
+#include "inc/key.h"
+#include "inc/tinyalsa.h"
+#include "inc/key_thread.h"
+#include "inc/play_thread.h"
 
 int main(int argc, char const *argv[])
 {
@@ -33,4 +33,3 @@ int main(int argc, char const *argv[])
 
     return 0;
 }
-
