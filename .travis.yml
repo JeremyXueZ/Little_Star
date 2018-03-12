@@ -4,9 +4,9 @@ language: c
 compiler: arm-linux-gnueabihf-gcc
 
 before_script:
-    sudo apt_get install wiringPi
-    cd tinyalsa 
-    make
+    - sudo apt-get install wiringPi
+    - cd tinyalsa 
+    - make
 
 script:
     - make
