@@ -6,7 +6,7 @@ compiler: arm-linux-gnueabihf-gcc
 addons:
     apt:
         packages:
-            - wiringPi
+            - wiringpi
             - tinyalsa
 
 script:
