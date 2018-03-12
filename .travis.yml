@@ -1,13 +1,12 @@
 os: raspbian
-sudo: false
+sudo: required
 language: c
 compiler: arm-linux-gnueabihf-gcc
 
-addons:
-    apt:
-        packages:
-            - wiringpi
-            - tinyalsa
+before_script:
+    sudo apt_get install wiringPi
+    cd tinyalsa 
+    make
 
 script:
     - make
