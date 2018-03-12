@@ -1,4 +1,4 @@
-os: raspberry
+os: raspbian
 sudo: false
 language: c
 compiler: gcc
