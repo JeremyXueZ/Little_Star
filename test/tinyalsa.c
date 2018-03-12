@@ -5,7 +5,7 @@
  > Created Time: Tue 06 Mar 2018 10:57:44 CST
 ************************************************************************/
 
-#include "alsa_test.h"
+#include "tinyalsa.h"
 
 /* 声卡设备定义，PCM设置 */
 unsigned int Card = 0;
@@ -14,7 +14,7 @@ int Flags = PCM_OUT;
 
 const struct pcm_config Config = {
     .channels = 2,
-    .rate = 44050,
+    .rate = 48000,
     .format = PCM_FORMAT_S16_LE,
     .period_size = 1024,
     .period_count = 2,
@@ -37,6 +37,7 @@ static char audio_path[10][30] = {"../audio/DJI.wav",
                                   "../audio/DJI.wav",
                                   "../audio/DJI.wav",
 };
+
 
 /* file_size
  * brief: 读取文件大小
@@ -148,11 +149,11 @@ int openAudio(int key)
     return 1;
 }
 
+
 /* stopAudio
  * brief: 关闭正在播放的音频文件，.wav 格式
  * args:  目标音频文件编号
  * */
-
 void stopAudio(int key)
 {
     if (frames[key] != NULL) {

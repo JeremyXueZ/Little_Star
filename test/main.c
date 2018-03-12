@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "key_test.h"
-#include "alsa_test.h"
+#include "key.h"
+#include "tinyalsa.h"
 #include "thread/key_thread.h"
 #include "thread/play_thread.h"
 

@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "/usr/local/tinyalsa/include/tinyalsa/pcm.h"
+#include "../tinyalsa/include/tinyalsa/pcm.h"
 
 
 int openAudio(int key);

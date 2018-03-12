@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
-#include "../alsa_test.h"
+#include "../tinyalsa.h"
 
 /* 声明于key_thread.c用于传递按键扫描结果 */
 extern int confirmed_key[10];
