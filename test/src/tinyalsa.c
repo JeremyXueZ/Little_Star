@@ -5,7 +5,7 @@
  > Created Time: Tue 06 Mar 2018 10:57:44 CST
 ************************************************************************/
 
-#include "tinyalsa.h"
+#include "../inc/tinyalsa.h"
 
 /* 声卡设备定义，PCM设置 */
 unsigned int Card = 0;

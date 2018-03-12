@@ -8,10 +8,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "key.h"
-#include "tinyalsa.h"
-#include "thread/key_thread.h"
-#include "thread/play_thread.h"
+#include "inc/key.h"
+#include "inc/tinyalsa.h"
+#include "inc/key_thread.h"
+#include "inc/play_thread.h"
 
 int main(int argc, char const *argv[])
 {

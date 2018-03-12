@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
-#include "../key.h"
+#include "../inc/key.h"
 
 /* 用于存储按键扫描的结果，确认无误的放入confirm数组中，传递给play线程，并将新按键按下标志置1 */
 static int key[10];
