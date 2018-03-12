@@ -1,7 +1,7 @@
 os: raspbian
 sudo: false
 language: c
-compiler: gcc
+compiler: arm-linux-gnueabihf-gcc
 
 addons:
     apt:
