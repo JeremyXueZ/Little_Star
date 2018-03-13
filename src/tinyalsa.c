@@ -70,7 +70,7 @@ static long int file_size(FILE * file)
     if (fseek(file, 0, SEEK_END) < 0) {
         return -1;
     }
-    long int file_size = ftell(file)
+    long int file_size = ftell(file);
     if (fseek(file, 0, SEEK_SET) < 0) {
         return -1;
     }
