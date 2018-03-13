@@ -11,8 +11,8 @@
 /* 各行列对应 wiringPi 引脚
  * e.g. 第一列C[0] 对应引脚 wPi pin_25
  * Notes: 需要根据实际接线修改 */
-int C[3]={25, 24, 23};
-int R[3]={29, 28, 27};
+int C[4]={25, 24, 23};
+int R[4]={29, 28, 27};
 
 
 /* gpioInit
@@ -32,7 +32,7 @@ void gpioInit(void)
 
 /* pullUp
  * brief: 列输出上拉
- * args : column: 列号C[0]-C[2] 或者 PULL_UP_ALL 拉高所有列
+ * args : column: 列号C[1]-C[3] 或者 PULL_UP_ALL 拉高所有列
  * rtn  : void
  * */
 void pullUp(int column)
@@ -55,7 +55,7 @@ void pullUp(int column)
 
 /* rowScan
  * brief: 行扫描并给出该行按键情况
- * args : row: 行号R[0]-R[2}
+ * args : row: 行号R[1]-R[3]
  * rtn  : key: 该行按键情况
  *             e.g.:
  *                 000 无按键

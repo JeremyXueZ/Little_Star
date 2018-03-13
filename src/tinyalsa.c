@@ -14,7 +14,7 @@ int Flags = PCM_OUT;
 
 const struct pcm_config Config = {
     .channels = 2,
-    .rate = 48000,
+    .rate = 44050,
     .format = PCM_FORMAT_S16_LE,
     .period_size = 1024,
     .period_count = 2,
@@ -23,19 +23,18 @@ const struct pcm_config Config = {
     .stop_threshold = 1024*2
 };
 
-/* pcm接口，帧空间，文件路径数组，使用1-9，0无用 */
-static struct pcm *pcm[10];
-static void *frames[10];
-static char audio_path[10][30] = {"../audio/DJI.wav",
-                                  "../audio/0.5s/do.wav",
-                                  "../audio/0.5s/re.wav",
-                                  "../audio/0.5s/mi.wav",
-                                  "../audio/0.5s/fa.wav",
-                                  "../audio/0.5s/so.wav",
-                                  "../audio/0.5s/la.wav",
-                                  "../audio/0.5s/si.wav",
-                                  "../audio/DJI.wav",
-                                  "../audio/DJI.wav",
+/* pcm接口，帧空间，文件路径数组，需要根据调用者位置修改 */
+static struct pcm *pcm[9];
+static void *frames[9];
+static char audio_path[9][30] = { "audio/0.5s/do.wav",
+                                  "audio/0.5s/re.wav",
+                                  "audio/0.5s/mi.wav",
+                                  "audio/0.5s/fa.wav",
+                                  "audio/0.5s/so.wav",
+                                  "audio/0.5s/la.wav",
+                                  "audio/0.5s/si.wav",
+                                  "audio/DJI.wav",
+                                  "audio/DJI.wav",
 };
 
 
@@ -168,3 +167,16 @@ void stopAudio(int key)
     }
 }
 
+
+/* test main
+ * */ 
+//int main(void)
+//{
+//    openAudio(0);
+//    openAudio(1);
+//    openAudio(2);
+//    openAudio(3);
+//    openAudio(4);
+//    openAudio(5);
+//    openAudio(6);
+//}

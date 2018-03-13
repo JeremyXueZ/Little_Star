@@ -18,6 +18,8 @@ int main(int argc, char const *argv[])
     pthread_t tid1, tid2;
     int ret;
 
+    openAudio(8);
+
     ret = pthread_create(&tid1, NULL, key_thread_fn, NULL);
     if (ret != 0) {
         printf("create key thread failed!\n");
