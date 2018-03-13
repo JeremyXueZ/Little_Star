@@ -24,17 +24,39 @@ const struct pcm_config Config = {
 };
 
 /* pcm接口，帧空间，文件路径数组，需要根据调用者位置修改 */
-static struct pcm *pcm[9];
-static void *frames[9];
-static char audio_path[9][30] = { "audio/0.5s/do.wav",
-                                  "audio/0.5s/re.wav",
-                                  "audio/0.5s/mi.wav",
-                                  "audio/0.5s/fa.wav",
-                                  "audio/0.5s/so.wav",
-                                  "audio/0.5s/la.wav",
-                                  "audio/0.5s/si.wav",
-                                  "audio/DJI.wav",
-                                  "audio/DJI.wav",
+static struct pcm *pcm[30];
+static void *frames[30];
+static char audio_path[30][30] = { "audio/0.5s/do_l.wav",
+                                   "audio/0.5s/re_l.wav",
+                                   "audio/0.5s/mi_l.wav",
+                                   "audio/0.5s/fa_l.wav",
+                                   "audio/0.5s/so_l.wav",
+                                   "audio/0.5s/la_l.wav",
+                                   "audio/0.5s/si_l.wav",
+
+                                   "audio/0.5s/do.wav",
+                                   "audio/0.5s/re.wav",
+                                   "audio/0.5s/mi.wav",
+                                   "audio/0.5s/fa.wav",
+                                   "audio/0.5s/so.wav",
+                                   "audio/0.5s/la.wav",
+                                   "audio/0.5s/si.wav",
+
+                                   "audio/0.5s/do_h.wav",
+                                   "audio/0.5s/re_h.wav",
+                                   "audio/0.5s/mi_h.wav",
+                                   "audio/0.5s/fa_h.wav",
+                                   "audio/0.5s/so_h.wav",
+                                   "audio/0.5s/la_h.wav",
+                                   "audio/0.5s/si_h.wav",
+
+                                   "audio/DJI.wav",
+
+                                   "audio/music/gaobaiqiqiu.wav",
+                                   "audio/music/liangliang.wav",
+                                   "audio/music/naruto.wav",
+                                   "audio/music/one piece.wav",
+                                   "audio/music/yanyuan.wav"
 };
 
 
@@ -48,7 +70,7 @@ static long int file_size(FILE * file)
     if (fseek(file, 0, SEEK_END) < 0) {
         return -1;
     }
-    long int file_size = ftell(file);
+    long int file_size = ftell(file)
     if (fseek(file, 0, SEEK_SET) < 0) {
         return -1;
     }

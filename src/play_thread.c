@@ -2,6 +2,9 @@
 #include <pthread.h>
 #include "../inc/tinyalsa.h"
 
+#define  MUSICAL_SCALE_MODE   0
+#define  DRUM_PAD_MODE        1
+
 /* 声明于key_thread.c用于传递按键扫描结果 */
 extern int confirmed_key[9];
 extern int new_key_is_pushed;
@@ -10,6 +13,13 @@ extern pthread_mutex_t key_scan_lock;
 /* 内部存储按键扫描结果，以及上一次的播放是否结束（用于覆盖前一次播放的音频） */
 static int key[9];
 static int last_playing[9];
+
+
+/* 切换功能相关变量  */
+static int key_base = 7;
+static int key_flag = 0;
+static int play_mode = MUSICAL_SCALE_MODE;
+
 
 /* 播放对应按键音频文件的线程 */
 static pthread_t snd[9];
@@ -33,10 +43,18 @@ static void *snd_thread_fn(void *arg)
     pthread_cleanup_push(stop_last_play, (void *)key);
 
     //播放对应的音频文件
-    if ((0 <= key) && (key <= 8)) {
-        openAudio(key);
+    if ( play_mode == MUSICAL_SCALE_MODE ){
+        if ((0 <= key) && (key <= 20)) {
+            openAudio(key+key_base);
+        } else {
+            printf("no this key!\n");
+        }
     } else {
-        printf("no this key!\n");
+        if ((0 <= key) && (key <=6)) {
+            openAudio(key+22);
+        } else {
+            printf("no this key!\n");
+        }
     }
 
     pthread_cleanup_pop(0);
@@ -73,6 +91,33 @@ static int read_key(void)
             key[i] = confirmed_key[i];
         new_key_is_pushed = 0;
         pthread_mutex_unlock(&key_scan_lock);
+
+        if (key[7] && key[8]) {
+            /* switch */
+            if (play_mode > 1) play_mode = 0;
+            else play_mode++;
+            return -1;
+        }
+
+        if (key[7]) {
+            if (key_flag<0 || key_flag>1) {
+                return -1;
+            } else {
+                key_base -= 7;
+                key_flag--;
+                return -1;
+            }
+        }
+
+        if (key[8]) {
+            if (key_flag<-1 || key_flag>0) {
+                return -1;
+            } else {
+                key_base += 7;
+                key_flag++;
+                return -1;
+            }
+        }
 
         return 0;
     } else {
