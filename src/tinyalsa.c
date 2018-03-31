@@ -50,7 +50,7 @@ static char audio_path[30][30] = { "audio/0.5s/do_l.wav",
                                    "audio/0.5s/la_h.wav",
                                    "audio/0.5s/si_h.wav",
 
-                                   "audio/DJI.wav",
+                                   "audio/start.wav",
 
                                    "audio/music/gaobaiqiqiu.wav",
                                    "audio/music/liangliang.wav",
