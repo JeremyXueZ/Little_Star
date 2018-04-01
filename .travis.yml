@@ -1,0 +1,18 @@
+os: raspbian
+sudo: required
+language: c
+compiler: arm-linux-gnueabihf-gcc
+
+#before_script:
+#    - sudo apt-get install wiringPi
+#    - cd tinyalsa 
+#    - make
+
+
+#script: 
+#    - make
+
+script:
+    - true
+
+# travis ci 暂不支持交叉编译工具还需要在云端下载工具链
